@@ -13,6 +13,8 @@ public class OnChangePositions : MonoBehaviour
     public float initialScale = 0.5f;
     Mesh generatedMesh;
 
+    private Vector2 lastDragPosition;
+
     private void Start()
     {
         GameObject[] allObject = FindObjectsOfType(typeof(GameObject)) as GameObject[];
@@ -44,6 +46,25 @@ public class OnChangePositions : MonoBehaviour
             transform.position = ((PointerEventData)baseEventData).pointerCurrentRaycast.worldPosition;
         }
     }
+
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            eventData.pressEventCamera, eventData.position, eventData.pressEventCamera, out lastDragPosition);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            eventData.pressEventCamera, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
+        {
+            Vector2 direction = localPoint - lastDragPosition;
+            MoveObject(direction);
+            lastDragPosition = localPoint;
+        }
+    }
+
 
     private void MakeHole2D()
     {
